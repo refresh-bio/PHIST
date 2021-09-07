@@ -95,4 +95,4 @@ The [predictions.csv](./example/predictions.csv) file assigns each phage to its 
 
 
 ## Citing
-[Zielezinski, A., Deorowicz, S., Gudyś, A. (2021) PHIST: fast and accurate prediction of prokaryotic hosts from metagenomic viral sequences, bioRxiv ]()
+[Zielezinski, A., Deorowicz, S., Gudyś, A. (2021) PHIST: fast and accurate prediction of prokaryotic hosts from metagenomic viral sequences, bioRxiv,  https://doi.org/10.1101/2021.09.06.459169](https://www.biorxiv.org/content/10.1101/2021.09.06.459169v1)
