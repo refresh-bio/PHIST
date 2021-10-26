@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LocalDebuggerCommandArguments>-k 25 virus/MGV-GENOME-0246745.fna host/GUT_GENOME255533.fna match.log</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>../example</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerCommandArguments>-k 25 virus/MGV-GENOME-0246745.fna host/GUT_GENOME255533.fna match.log</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerWorkingDirectory>../example</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
+</Project>
