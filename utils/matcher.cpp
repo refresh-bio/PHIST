@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
 			<< "\tlength - minimum match length (25 by default)" << endl
 			<< "\tphage - phage FASTA file (gzipped or not)" << endl
 			<< "\thost - host FASTA file (gzipped or not)" << endl
-			<< "\tmatches - all exact matches of length k or longer" << endl;
+			<< "\tmatches - CSV table with all exact matches" << endl;
 		return 0;
 	}
 
@@ -182,7 +182,7 @@ int main(int argc, char** argv) {
 
 	// perform matching from virus point of view
 	ofstream outfile(params[2]);
-	outfile << "phage,host" << endl;
+	outfile << virPath << "," << hostPath << endl;
 
 	std::vector<Match> matches;
 
@@ -218,7 +218,7 @@ int main(int argc, char** argv) {
 							// continue forward match
 							++match.host_last.pos;
 							++match.vir_last;
-							consumed == true;
+							consumed = true;
 						}
 					}
 
