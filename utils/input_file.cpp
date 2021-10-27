@@ -12,9 +12,9 @@ Authors: Sebastian Deorowicz, Adam Gudys, Maciej Dlugosz, Marek Kokot, Agnieszka
 #include <memory>
 #include <fstream>
 #include <string>
-#include <cassert>
-#include <bitset>
 #include <cstdio>
+#include <cstring>
+#include <algorithm>
 
 
 
