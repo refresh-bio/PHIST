@@ -125,7 +125,7 @@ size_t extract_kmers(
 		if (filter(kmer_can)) {
 
 			if (positions != nullptr) {
-				positions[counter] = i;
+				positions[counter] = i - kmerLength + 1;
 			}
 
 			kmers[counter++] = kmer_can;

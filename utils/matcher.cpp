@@ -51,6 +51,21 @@ struct Match {
 		host_start(host_start),
 		host_last(host_last) 
 	{}
+
+	void asRanges(std::pair<uint32_t, uint32_t>& vir_range, std::pair<uint32_t, uint32_t>& host_range, int k) {
+		
+		vir_range.first = vir_start + 1;
+		vir_range.second= vir_last + k ; // 1-based indexing
+	
+		if (host_last.is_rev) {
+			host_range.second = host_last.pos + 1; // 1-based indexing
+			host_range.first = host_start.pos + k;
+		}
+		else {
+			host_range.first = host_start.pos + 1; // 1-based indexing
+			host_range.second = host_last.pos + k;
+		}
+	}
 };
 
 
@@ -75,6 +90,8 @@ bool findOption(std::vector<std::string>& params, const std::string& name, T& v)
 			return true;
 		}
 	}
+
+	return false;
 }
 
 int main(int argc, char** argv) {
@@ -235,19 +252,9 @@ int main(int argc, char** argv) {
 			{
 				if (it->vir_last != vir_pos) {
 					
-					std::pair<uint32_t, uint32_t> vir_range{ it->vir_start + 1, it->vir_last + k }; // 1-based indexing
-					std::pair<uint32_t, uint32_t> host_range;
+					std::pair<uint32_t, uint32_t> vir_range, host_range;
+					it->asRanges(vir_range, host_range, k);
 					
-					
-					if (it->host_last.is_rev) {
-						host_range.second = it->host_last.pos + 1; // 1-based indexing
-						host_range.first = it->host_start.pos + k;
-					}
-					else {
-						host_range.first = it->host_start.pos + 1; // 1-based indexing
-						host_range.second = it->host_last.pos + k;
-					}
-
 					outfile
 						<< vir_header << ':' << vir_range.first << "-" << vir_range.second << ","  
 						<< hostFasta.getHeaders()[it->host_last.chr] << ":" << host_range.first << "-" << host_range.second << endl;
@@ -259,6 +266,17 @@ int main(int argc, char** argv) {
 				}
 			}	
 		}
+
+		// if there are some matches left
+		for (auto it = matches.begin(); it != matches.end(); ++it) {
+			std::pair<uint32_t, uint32_t> vir_range, host_range;
+			it->asRanges(vir_range, host_range, k);
+
+			outfile
+				<< vir_header << ':' << vir_range.first << "-" << vir_range.second << ","
+				<< hostFasta.getHeaders()[it->host_last.chr] << ":" << host_range.first << "-" << host_range.second << endl;
+		}
+		matches.clear();
 	} 
 
 	outfile.close();

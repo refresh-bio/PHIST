@@ -220,11 +220,16 @@ bool FastaFile::extractSubsequences(
 
 		++header; // omit '<'
 		headers.push_back(header);
-
+		
 		ptr = strchr(header, '\n'); // find end of header
 		if (*(ptr - 1) == '\r') { // on Windows
 			*(ptr - 1) = 0;
 		}
+
+		// replace first white character in header with 0
+		*std::find_if(header, ptr, [](char c) { return c == ' ' || c == '\t';  }) = 0;
+
+
 		*ptr = 0; // put 0 as separator
 		++ptr; // move to next character (begin of chromosome)
 		subsequences.push_back(ptr); // store chromosome
