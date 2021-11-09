@@ -49,7 +49,7 @@ Positional arguments:
   * `out_predictions`   output CSV file with hosts predictions (default: *predictions.csv*).
 
 Options:
-* `-k --k <kmer-length>`   *k*-mer length (default: 25),
+* `-k --k <kmer-length>`   *k*-mer length (default: 25, max: 30),
 * `-t, --t <num-threads>`  number of threads (default: number of cores),
 * `-h, --help`             show this help message and exit,
 * `--version`              show tool's version number and exit.
@@ -92,6 +92,44 @@ The [predictions.csv](./example/predictions.csv) file assigns each phage to its 
 |  *&phi;<sub>3</sub>*   | *host<sub>1</sub>*( *&phi;<sub>3</sub>*) | &#124;*&phi;<sub>3</sub>* &cap; *host<sub>1</sub>*(*&phi;<sub>3</sub>*)&#124; | ... | ... |
 |  *&phi;<sub>3</sub>*   | *host<sub>2</sub>*( *&phi;<sub>3</sub>*) | &#124;*&phi;<sub>3</sub>* &cap; *host<sub>2</sub>*(*&phi;<sub>3</sub>*)&#124; | ... | ... |
 | ... | ... | ... | ... | ... | ... |
+
+
+## Further analysis
+
+The `utils/matcher` tool retrieves the list of all exact matches of legnth >= *k* for a given pair of phage and host FASTA sequences. The matches are provided with their coordinates in the viral and corresponding bacterial genome (a reversed interval in the latter indicates a reverse complement match).
+
+### Usage
+
+```
+./utils/matcher [options] <virus> <host> <output>
+```
+
+Positional arguments:
+  * `virus`             virus FASTA file (gzipped or not),
+  * `host`              host FASTA file (gzipped or not),
+  * `output`            output CSV file
+
+Options:
+* `-k --k <kmer-length>`   *k*-mer length (default: 25, max: 30, may be different than the one used in the PHIST execution),
+
+
+### Example
+
+```
+./utils/matcher example/virus/NC_024123.fna example/host/NC_017548.fna shared_regions.csv
+```
+
+
+```
+example/virus/NC_024123.fna,example/host/NC_017548.fna
+NC_024123.1:52942-52968,NC_017548.1:1456873-1456847
+NC_024123.1:52970-53009,NC_017548.1:1456845-1456806
+NC_024123.1:53011-53102,NC_017548.1:1456804-1456713
+NC_024123.1:53107-53147,NC_017548.1:1456708-1456668
+NC_024123.1:53830-53854,NC_017548.1:2647971-2647947
+NC_024123.1:54794-54827,NC_017548.1:679998-679965
+```
+
 
 
 ## Citing
