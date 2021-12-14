@@ -133,4 +133,4 @@ NC_024123.1:54794-54827,NC_017548.1:679998-679965
 
 
 ## Citing
-[Zielezinski, A., Deorowicz, S., Gudyś, A. (2021) PHIST: fast and accurate prediction of prokaryotic hosts from metagenomic viral sequences, bioRxiv,  https://doi.org/10.1101/2021.09.06.459169](https://www.biorxiv.org/content/10.1101/2021.09.06.459169v1)
+[Zielezinski, A., Deorowicz, S., Gudyś, A. (2021) PHIST: fast and accurate prediction of prokaryotic hosts from metagenomic viral sequences, Bioinformatics, btab837.](https://doi.org/10.1093/bioinformatics/btab837)
