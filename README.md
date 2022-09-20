@@ -15,9 +15,8 @@ git clone --recurse-submodules https://github.com/refresh-bio/PHIST
 
 cd PHIST
 make
-mkdir ./out
 
-python3 phist.py ./example/virus ./example/host ./out/common_kmers.csv ./out/predictions.csv
+./phist.py ./example/virus ./example/host ./out/
 
 ```
 
@@ -39,20 +38,19 @@ Under Windows one have to build Visual Studio 2015 solutions on *kmer-db* and *u
 PHIST takes as input two directories containing FASTA files (gzipped or not) with genomic sequences of viruses and candidate hosts (see [example](./example/)).
 
 ```
-python3 phist.py [options] <virus_dir> <host_dir> <out_table> <out_predictions>
+./phist.py [options] <virus_dir> <host_dir> <out_dir>
 ```
 
 Positional arguments:
-  * `virus_dir`         input directory with virus FASTA files (gzipped or not),
-  * `host_dir`          input directory with host FASTA files (gzipped or not),
-  * `out_table`         output CSV file with common k-mers table (default: *common_kmers.csv*),
-  * `out_predictions`   output CSV file with hosts predictions (default: *predictions.csv*).
+  * `virus_dir`         Input directory w/ virus FASTA files (plain or gzip),
+  * `host_dir`          Input directory w/ host FASTA files (plain or gzip),
+  * `out_dir`           Output directory (will be created if it does not exist)
 
 Options:
-* `-k --k <kmer-length>`   *k*-mer length (default: 25, max: 30),
-* `-t, --t <num-threads>`  number of threads (default: number of cores),
-* `-h, --help`             show this help message and exit,
-* `--version`              show tool's version number and exit.
+* `-k <kmer-length>`   *k*-mer length (default: 25, max: 30),
+* `-t <num-threads>`  Number of threads (default: number of cores),
+* `-h, --help`             Show this help message and exit,
+* `--version`              Show tool's version number and exit.
 
 ## Output format
 
@@ -133,4 +131,6 @@ NC_024123.1:54794-54827,NC_017548.1:679998-679965
 
 
 ## Citing
-[Zielezinski, A., Deorowicz, S., Gudyś, A. (2021) PHIST: fast and accurate prediction of prokaryotic hosts from metagenomic viral sequences, Bioinformatics, btab837.](https://doi.org/10.1093/bioinformatics/btab837)
+Zielezinski A, Deorowicz S, Gudyś A. PHIST: fast and accurate prediction of prokaryotic hosts from metagenomic viral sequences, Bioinformatics. 2022, 38(5):1447-9. doi:[10.1093/bioinformatics/btab837](https://doi.org/10.1093/bioinformatics/btab837).
+
+

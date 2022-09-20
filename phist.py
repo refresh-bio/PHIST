@@ -1,55 +1,75 @@
-# 
-# PHIST
-# Copyright (C) 2021, A. Zielezinski, S. Deorowicz, and A. Gudys
-# https://github.com/refresh-bio/PHIST
-# 
-# This program is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 3 of the License, or (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY
-# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-# A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License along with this
-# program. If not, see https://www.gnu.org/licenses/.
-# 
+#!/usr/bin/env python3
+"""A tool to predict prokaryotic hosts for phage (meta)genomic sequences. 
+PHIST links viruses to hosts based on the number of k-mers shared between 
+their sequences.
+
+Copyright (C) 2021 A. Zielezinski, S. Deorowicz, and A. Gudys
+https://github.com/refresh-bio/PHIST
+"""
+
+from __future__ import annotations
 import argparse
 import multiprocessing
-import subprocess
-from pathlib import Path
 import platform
+from pathlib import Path
+import subprocess
+import sys
+
+__version__ = '1.1.0'
 
 
-__version__ = '1.0.0'
-
-def get_arguments():
+def get_parser() -> argparse.ArgumentParser:
     desc = f'PHIST predicts hosts from phage (meta)genomic data'
     p = argparse.ArgumentParser(description=desc)
     p.add_argument('virus_dir', metavar='virus_dir',
-                   help='Input directory with virus FASTA files (gzipped or not)')
+                   help='Input directory w/ virus FASTA files (plain or gzip)')
     p.add_argument('host_dir', metavar='host_dir',
-                   help='Input directory with host FASTA files (gzipped or not)')
-    p.add_argument('out_table', metavar='out_table',
-                   help='Output CSV file with common k-mers table')
-    p.add_argument('out_predictions', metavar='out_predictions',
-                   help='Output CSV file with hosts predictions')
-    p.add_argument('-k', '--k', dest='k', type=int,
+                   help='Input directory w/ host FASTA files (plain or gzip)')
+    p.add_argument('out_dir', metavar='out_dir',
+                   help='Output directory (will be created if it does not exist)')
+    p.add_argument('-k', dest='k', type=int,
                    default=25, help='k-mer length [default =  %(default)s]')
-    p.add_argument('-t', '--t', dest='num_threads', type=int,
+    p.add_argument('-t', dest='num_threads', type=int,
                    default=multiprocessing.cpu_count(),
                    help='Number of threads [default = %(default)s]')
     p.add_argument('--version', action='version',
-                   version='PHIST v' + __version__,
+                   version=__version__,
                    help="Show tool's version number and exit")
-    args = p.parse_args()
+
+    # Display help if the script is run without arguments.
+    if len(sys.argv[1:]) == 0:
+        p.print_help()
+        p.exit()
+    return p
+
+
+def validate_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
+    """Validates arguments provided by the user.
+
+    Returns:
+        Arguments provided by the users.
+    Raises:
+        argparse.ArgumentParser.error if arguments are invalid.
+    """
+    args = parser.parse_args()
+    
+    # Validate k-mer length.
+    if args.k < 3 or args.k > 30:
+        parser.error(f'K-mer length should be in range 3-30.')
+
+    # Validate input directories.
+    vdir_path = Path(args.virus_dir)
+    hdir_path = Path(args.host_dir)
+    for directory in [vdir_path, hdir_path]:
+        if not directory.exists() or not directory.is_dir():
+            parser.error(f'Input directory does not exist: {directory}')
+
+    args.vdir_path = vdir_path
+    args.hdir_path = hdir_path
     return args
 
 
-if __name__ == '__main__':   
-    print(
-        f'PHIST  v{__version__}\n',
-		'A. Zielezinski, S. Deorowicz, A. Gudys (c) 2021\n\n')
+if __name__ == '__main__':
     
     PHIST_DIR = Path(__file__).resolve().parent
 
@@ -60,18 +80,25 @@ if __name__ == '__main__':
         kmer_exec = PHIST_DIR.joinpath('kmer-db', 'kmer-db')
         util_exec = PHIST_DIR.joinpath('utils', 'phist')
 
-    args = get_arguments()
+    parser = get_parser()
+    args = validate_args(parser)
 
-    vdir_path = Path(args.virus_dir)
-    hdir_path = Path(args.host_dir)
-    outtable_path = Path(args.out_table)
-    outpred_path = Path(args.out_predictions)
+    print(
+        f'PHIST  v{__version__}\n',
+        'A. Zielezinski, S. Deorowicz, A. Gudys (c) 2021\n\n')
+
+    vdir_path = args.vdir_path
+    hdir_path = args.hdir_path
+    out_dir = Path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    outtable_path = out_dir / 'common_kmers.csv'
+    outpred_path = out_dir / 'predictions.csv'
 
     # Paths to temp files.
-    temp_path = outtable_path.resolve().parent
-    vlst_path = temp_path.joinpath('vir.list')
-    hlst_path = temp_path.joinpath('host.list')
-    db_path = temp_path.joinpath('vir.db')
+    vlst_path = out_dir / 'vir.list'
+    hlst_path = out_dir / 'host.list'
+    db_path = out_dir / 'vir.db'
 
     # Create vir.list and host.list.
     for lst_path, dir_path in [(vlst_path, vdir_path), (hlst_path, hdir_path)]:
