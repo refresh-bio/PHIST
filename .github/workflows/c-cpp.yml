@@ -28,8 +28,8 @@ jobs:
     - name: build 
       run: |
         python3 phist.py ./example/virus ./example/host ./out/
-        cmp ./out/common_kmers.csv ./example/common_kmers.csv
-        cmp ./out/predictions.csv ./example/predictions.csv
+        diff -u --ignore-space-change --strip-trailing-cr --ignore-blank-lines ./out/common_kmers.csv ./example/common_kmers.csv
+        diff -u --ignore-space-change --strip-trailing-cr --ignore-blank-lines ./out/predictions.csv ./example/predictions.csv
         
          
   macos-build:
