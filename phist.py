@@ -25,7 +25,7 @@ def get_parser() -> argparse.ArgumentParser:
                    help='Input directory w/ virus FASTA files (plain or gzip)')
     p.add_argument('host_dir', metavar='host_dir',
                    help='Input directory w/ host FASTA files (plain or gzip)')
-    p.add_argument('out_dir', metavar='out_dir',
+    p.add_argument('out_dir', metavar='out_dir', nargs='+',
                    help='Output directory (will be created if it does not exist)')
     p.add_argument('-k', dest='k', type=int,
                    default=25, help='k-mer length [default =  %(default)s]')
@@ -66,6 +66,16 @@ def validate_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
 
     args.vdir_path = vdir_path
     args.hdir_path = hdir_path
+
+    # Validate output files
+    if len(args.out_dir) > 1:
+        args.outtable_path = Path(args.out_dir[0])
+        args.outpred_path = Path(args.out_dir[1])
+        args.out_dir = args.outtable_path.parent
+    else:
+        args.out_dir = Path(args.out_dir[0])
+        args.outtable_path = args.out_dir / 'common_kmers.csv'
+        args.outpred_path = args.out_dir / 'predictions.csv'
     return args
 
 
@@ -89,11 +99,8 @@ if __name__ == '__main__':
 
     vdir_path = args.vdir_path
     hdir_path = args.hdir_path
-    out_dir = Path(args.out_dir)
+    out_dir = args.out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
-
-    outtable_path = out_dir / 'common_kmers.csv'
-    outpred_path = out_dir / 'predictions.csv'
 
     # Paths to temp files.
     vlst_path = out_dir / 'vir.list'
@@ -129,7 +136,7 @@ if __name__ == '__main__':
         f'{args.num_threads}',
         f'{db_path}',
         f'{hlst_path}',
-        f'{outtable_path}',
+        f'{args.outtable_path}',
     ]
     subprocess.run(cmd)
 
@@ -141,7 +148,7 @@ if __name__ == '__main__':
     # Postprocessing
     cmd = [
         f'{util_exec}',
-        f'{outtable_path}',
-        f'{outpred_path}',
+        f'{args.outtable_path}',
+        f'{args.outpred_path}',
     ]
     subprocess.run(cmd)

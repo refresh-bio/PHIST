@@ -25,11 +25,17 @@ jobs:
         git submodule update
         make
     
-    - name: build 
+    - name: predict (out dir) 
       run: |
         python3 phist.py ./example/virus ./example/host ./out/
         diff -u --ignore-space-change --strip-trailing-cr --ignore-blank-lines ./out/common_kmers.csv ./example/common_kmers.csv
         diff -u --ignore-space-change --strip-trailing-cr --ignore-blank-lines ./out/predictions.csv ./example/predictions.csv
+        
+    - name: predict (out files) 
+      run: |
+        python3 phist.py ./example/virus ./example/host common_kmers.csv predictions.csv
+        diff -u --ignore-space-change --strip-trailing-cr --ignore-blank-lines common_kmers.csv ./example/common_kmers.csv
+        diff -u --ignore-space-change --strip-trailing-cr --ignore-blank-lines predictions.csv ./example/predictions.csv    
         
          
   macos-build:
