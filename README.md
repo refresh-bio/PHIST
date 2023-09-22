@@ -1,5 +1,5 @@
 # PHIST
-
+[![Bioconda downloads](https://img.shields.io/conda/dn/bioconda/phist.svg?style=flag&label=Bioconda%20downloads)](https://anaconda.org/bioconda/phist)
 [![C/C++ CI](https://github.com/refresh-bio/PHIST/workflows/C/C++%20CI/badge.svg)](https://github.com/refresh-bio/PHIST/actions)
 
 
