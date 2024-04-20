@@ -116,14 +116,16 @@ if __name__ == '__main__':
     with open(vlst_path, 'w') as oh:
         if v_path.is_dir():
             for f in sorted(v_path.rglob('*')):
-                oh.write(f'{f}\n')
+                if f.is_file():
+                    oh.write(f'{f}\n')
         else:
             oh.write(f'{v_path}')
 
     # Create host.list.
     with open(hlst_path, 'w') as oh:
         for f in sorted(hdir_path.rglob('*')):
-            oh.write(f"{f}\n")
+            if f.is_file():
+                oh.write(f"{f}\n")
         oh.close()
 
     # Kmer-db build
