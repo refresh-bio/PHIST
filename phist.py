@@ -15,14 +15,14 @@ from pathlib import Path
 import subprocess
 import sys
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
 
 def get_parser() -> argparse.ArgumentParser:
     desc = f'PHIST predicts hosts from phage (meta)genomic data'
     p = argparse.ArgumentParser(description=desc)
-    p.add_argument('virus_dir', metavar='virus_dir',
-                   help='Input directory w/ virus FASTA files (plain or gzip)')
+    p.add_argument('virus_path',
+                   help='Input FASTA file or directory with FASTA files (plain or gzip)')
     p.add_argument('host_dir', metavar='host_dir',
                    help='Input directory w/ host FASTA files (plain or gzip)')
     p.add_argument('out_dir', metavar='out_dir', nargs='+',
@@ -32,6 +32,8 @@ def get_parser() -> argparse.ArgumentParser:
     p.add_argument('-t', dest='num_threads', type=int,
                    default=multiprocessing.cpu_count(),
                    help='Number of threads [default = %(default)s]')
+    p.add_argument('--keep_temp', action="store_true",
+                   help='Keep temporary kmer-db files [%(default)s]')
     p.add_argument('--version', action='version',
                    version=__version__,
                    help="Show tool's version number and exit")
@@ -53,18 +55,21 @@ def validate_args(parser: argparse.ArgumentParser) -> argparse.Namespace:
     """
     args = parser.parse_args()
     
-    # Validate k-mer length.
+    # Validate k-mer length
     if args.k < 3 or args.k > 30:
         parser.error(f'K-mer length should be in range 3-30.')
 
-    # Validate input directories.
-    vdir_path = Path(args.virus_dir)
-    hdir_path = Path(args.host_dir)
-    for directory in [vdir_path, hdir_path]:
-        if not directory.exists() or not directory.is_dir():
-            parser.error(f'Input directory does not exist: {directory}')
+    # Validate virus input
+    v_path = Path(args.virus_path)
+    if not v_path.exists():
+        parser.error(f'Virus input does not exist: {v_path}')
 
-    args.vdir_path = vdir_path
+    # Validate host input
+    hdir_path = Path(args.host_dir)
+    if not hdir_path.exists() or not hdir_path.is_dir():
+        parser.error(f'Input host directory does not exist: {hdir_path}')
+
+    args.v_path = v_path
     args.hdir_path = hdir_path
 
     # Validate output files
@@ -97,20 +102,27 @@ if __name__ == '__main__':
         f'PHIST  v{__version__}\n',
         'A. Zielezinski, S. Deorowicz, A. Gudys (c) 2021\n\n')
 
-    vdir_path = args.vdir_path
+    v_path = args.v_path
     hdir_path = args.hdir_path
     out_dir = args.out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Paths to temp files.
-    vlst_path = out_dir / 'vir.list'
+    # Paths to temp files
+    vlst_path = out_dir / 'virus.list'
     hlst_path = out_dir / 'host.list'
-    db_path = out_dir / 'vir.db'
+    db_path = out_dir / 'virus.kdb'
 
-    # Create vir.list and host.list.
-    for lst_path, dir_path in [(vlst_path, vdir_path), (hlst_path, hdir_path)]:
-        oh = open(lst_path, 'w')
-        for f in sorted(dir_path.iterdir()):
+    # Create virus.lst
+    with open(vlst_path, 'w') as oh:
+        if v_path.is_dir():
+            for f in sorted(v_path.rglob('*')):
+                oh.write(f'{f}\n')
+        else:
+            oh.write(f'{v_path}')
+
+    # Create host.list.
+    with open(hlst_path, 'w') as oh:
+        for f in sorted(hdir_path.rglob('*')):
             oh.write(f"{f}\n")
         oh.close()
 
@@ -125,6 +137,8 @@ if __name__ == '__main__':
         f'{vlst_path}',
         f'{db_path}',
     ]
+    if v_path.is_file():
+        cmd.insert(6, '-multisample-fasta')
     subprocess.run(cmd)
 
     # Kmer-db new2all
@@ -141,9 +155,10 @@ if __name__ == '__main__':
     subprocess.run(cmd)
 
     # Remove temp files.
-    vlst_path.unlink()
-    hlst_path.unlink()
-    db_path.unlink()  
+    if not args.keep_temp:
+        vlst_path.unlink()
+        hlst_path.unlink()
+        db_path.unlink()  
     
     # Postprocessing
     cmd = [

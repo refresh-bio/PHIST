@@ -35,22 +35,34 @@ Under Windows one have to build Visual Studio 2015 solutions on *kmer-db* and *u
 
 ## Usage
 
-PHIST takes as input two directories containing FASTA files (gzipped or not) with genomic sequences of viruses and candidate hosts (see [example](./example/)).
+PHIST takes as input genomic sequences of viruses and candidate hosts in FASTA files (gzipped or not). Virus genomes may be provided in a single FASTA file or in a directory containing multiple FASTA files (one genome per file). Candidate host genomes should be stored individually in a directory (one genome per FASTA file) (see [example](./example/)).
 
 ```
-./phist.py [options] <virus_dir> <host_dir> <out_dir>
+./phist.py [options] <virus_path> <host_dir> <out_dir>
 ```
 
 Positional arguments:
-  * `virus_dir`         Input directory w/ virus FASTA files (plain or gzip),
-  * `host_dir`          Input directory w/ host FASTA files (plain or gzip),
+  * `virus_path`         Input FASTA file or directory with files (plain or gzip)
+  * `host_dir`          Input directory w/ host FASTA files (plain or gzip)
   * `out_dir`           Output directory (will be created if it does not exist)
 
 Options:
-* `-k <kmer-length>`   *k*-mer length (default: 25, max: 30),
-* `-t <num-threads>`  Number of threads (default: number of cores),
-* `-h, --help`             Show this help message and exit,
-* `--version`              Show tool's version number and exit.
+* `-k <kmer-length>`   *k*-mer length (default: 25, max: 30)
+* `-t <num-threads>`  Number of threads (default: number of cores)
+* `-h, --help`             Show this help message and exit
+* `--keep_temp`         Keep temporary kmer-db files [False]
+* `--version`              Show tool's version number and exit
+
+
+### Usage example
+
+```
+./phist.py example/virus/ example/host/ out/ 
+```
+
+```
+./phist.py example/virus_multifasta.fna example/host/ out/
+```
 
 ## Output format
 
@@ -129,8 +141,5 @@ NC_024123.1:54794-54827,NC_017548.1:679998-679965
 ```
 
 
-
 ## Citing
 Zielezinski A, Deorowicz S, Gudyś A. PHIST: fast and accurate prediction of prokaryotic hosts from metagenomic viral sequences, Bioinformatics. 2022, 38(5):1447-9. doi:[10.1093/bioinformatics/btab837](https://doi.org/10.1093/bioinformatics/btab837).
-
-
