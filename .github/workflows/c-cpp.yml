@@ -12,18 +12,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  
+
   linux-test:
     name: Linux test
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++-11]
     runs-on: ubuntu-latest
    
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    
     - name: make
       run: |
-        git submodule init
-        git submodule update
-        make
+        make -j CXX=${{matrix.compiler}}
     
     - name: predict (out dir) 
       run: |
@@ -40,13 +45,18 @@ jobs:
          
   macos-build:
     name: macOS test
-    runs-on: macOS-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++-11]
+    runs-on: macOS-12
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        
     - name: make
       run: |
-        git submodule init
-        git submodule update
-        make
+        make -j CXX=${{matrix.compiler}}
 
