@@ -1,3 +1,6 @@
 [submodule "kmer-db"]
 	path = kmer-db
 	url = https://github.com/refresh-bio/kmer-db/
+[submodule "3rd_party/zlib-ng"]
+	path = 3rd_party/zlib-ng
+	url = https://github.com/refresh-bio-dependencies/zlib-ng.git

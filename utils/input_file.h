@@ -33,7 +33,7 @@ public:
 
 	bool open(const std::string& filename);
 	
-	bool close() { delete[] rawData;  }
+	bool close() { delete[] rawData; return true; }
 
 
 protected:
