@@ -10,13 +10,15 @@ endif
 
 CFLAGS=-O3 -std=c++11
 
-ifeq ($(uname_S),Linux)
-	CFLAGS+=-fabi-version=6
-	CFLAGS+=-static -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
-endif
+ifeq ($(STATIC_LINK),true)
+	ifeq ($(uname_S),Linux)
+		CFLAGS+=-fabi-version=6
+		CFLAGS+=-static -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
+	endif
 
-ifeq ($(uname_S),Darwin)
-	CFLAGS+= -lc -static-libgcc
+	ifeq ($(uname_S),Darwin)
+		CFLAGS+= -lc -static-libgcc
+	endif
 endif
 
 
