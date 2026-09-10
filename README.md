@@ -2,6 +2,7 @@
 [![Bioconda downloads](https://img.shields.io/conda/dn/bioconda/phist.svg?style=flag&label=Bioconda%20downloads)](https://anaconda.org/bioconda/phist)
 [![C/C++ CI](https://github.com/refresh-bio/PHIST/workflows/C/C++%20CI/badge.svg)](https://github.com/refresh-bio/PHIST/actions)
 
+ [![Bioinformatics 10.1093/bioinformatics/btab837](https://img.shields.io/badge/Bioinformatics%202022-10.1093%2Fbioinformatics%2Fbtab837-blue)](https://doi.org/10.1093/bioinformatics/btab837)
 
 **Phage-Host Interaction Search Tool**
 
